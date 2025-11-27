@@ -1,5 +1,7 @@
 # Payslip Generator
 
+![Deploy to GitHub Pages](https://github.com/ThanhNguyxn/payslip-generator/actions/workflows/deploy.yml/badge.svg)
+
 A professional, dynamic payslip generator built with React and Vite.
 
 ## Features
