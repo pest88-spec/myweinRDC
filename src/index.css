@@ -353,8 +353,15 @@ body {
 }
 
 @media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
   body {
     background: white;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .app-header,
@@ -364,19 +371,25 @@ body {
 
   .main-content {
     display: block;
+    height: auto;
+    overflow: visible;
   }
 
   .preview-panel {
     padding: 0;
     background: white;
     overflow: visible;
+    display: block;
   }
 
   .payslip-container {
     box-shadow: none;
     width: 100%;
-    min-height: auto;
-    padding: 0;
+    min-height: 100vh;
+    /* Ensure it takes full height */
+    padding: 40px 50px;
+    /* Keep padding */
     margin: 0;
+    border: none;
   }
 }

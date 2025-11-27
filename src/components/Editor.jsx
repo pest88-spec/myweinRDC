@@ -3,7 +3,7 @@ import InputGroup from './InputGroup';
 import DynamicTable from './DynamicTable';
 
 const Editor = ({ state, onChange, onArrayChange, onAdd, onRemove }) => {
-    const { company, employee, meta, earnings, deductions } = state;
+    const { company, bank, employee, meta, earnings, deductions } = state;
 
     return (
         <div className="editor-panel">
@@ -13,6 +13,7 @@ const Editor = ({ state, onChange, onArrayChange, onAdd, onRemove }) => {
                 <InputGroup label="Address" value={company.address} onChange={(val) => onChange('company', 'address', val)} />
                 <InputGroup label="Phone" value={company.phone} onChange={(val) => onChange('company', 'phone', val)} />
                 <InputGroup label="Email" value={company.email} onChange={(val) => onChange('company', 'email', val)} />
+                <InputGroup label="Website" value={company.website || ''} onChange={(val) => onChange('company', 'website', val)} />
             </section>
 
             <section className="editor-section">
@@ -23,6 +24,12 @@ const Editor = ({ state, onChange, onArrayChange, onAdd, onRemove }) => {
                 <InputGroup label="Employee ID" value={employee.employeeId} onChange={(val) => onChange('employee', 'employeeId', val)} />
                 <InputGroup label="Tax Code" value={employee.taxCode} onChange={(val) => onChange('employee', 'taxCode', val)} />
                 <InputGroup label="Hourly Rate" type="number" value={employee.payRate} onChange={(val) => onChange('employee', 'payRate', val)} />
+            </section>
+
+            <section className="editor-section">
+                <h2>Bank Details</h2>
+                <InputGroup label="Bank Name" value={bank ? bank.bankName : ''} onChange={(val) => onChange('bank', 'bankName', val)} />
+                <InputGroup label="Account Number" value={bank ? bank.accountNumber : ''} onChange={(val) => onChange('bank', 'accountNumber', val)} />
             </section>
 
             <section className="editor-section">

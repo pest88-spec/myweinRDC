@@ -4,7 +4,12 @@ export const INITIAL_STATE = {
         address: "123 Business Rd, Tech City, TC 90210",
         phone: "03 9000 0000",
         email: "accounts@example.com",
+        website: "www.example.com",
         logo: ""
+    },
+    bank: {
+        bankName: "Example Bank",
+        accountNumber: "1234567890"
     },
     employee: {
         name: "John Doe",

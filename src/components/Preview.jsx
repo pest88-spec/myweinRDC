@@ -2,7 +2,7 @@ import React from 'react';
 import { calculateTotalEarnings, calculateTotalDeductions, calculateNetPay, formatCurrency } from '../utils/calculations';
 
 const Preview = ({ state }) => {
-    const { company, employee, meta, earnings, deductions } = state;
+    const { company, bank, employee, meta, earnings, deductions } = state;
     const totalEarnings = calculateTotalEarnings(earnings);
     const totalDeductions = calculateTotalDeductions(deductions);
     const netPay = calculateNetPay(earnings, deductions);
@@ -23,7 +23,7 @@ const Preview = ({ state }) => {
                         Address: {company.address}
                     </div>
                     <div className="company-website">
-                        <a href="#">www.companywebsite.com</a>
+                        <a href={company.website && company.website.startsWith('http') ? company.website : `https://${company.website}`} target="_blank" rel="noreferrer">{company.website}</a>
                     </div>
                 </header>
 
@@ -142,8 +142,8 @@ const Preview = ({ state }) => {
                         <div className="net-pay-label">
                             <strong>Net pay</strong>
                             <div className="bank-details">
-                                <div className="bank-row"><span className="bank-label">Bank details:</span> <span>CHASE BANK</span></div>
-                                <div className="bank-row"><span className="bank-label">Account number:</span> <span>892-5647391</span></div>
+                                <div className="bank-row"><span className="bank-label">Bank details:</span> <span>{bank ? bank.bankName : 'CHASE BANK'}</span></div>
+                                <div className="bank-row"><span className="bank-label">Account number:</span> <span>{bank ? bank.accountNumber : '892-5647391'}</span></div>
                                 <div className="bank-row"><span className="bank-label">Total net pay:</span> <span className="net-amount">{formatCurrency(netPay)}</span></div>
                             </div>
                         </div>
