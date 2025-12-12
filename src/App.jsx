@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { INITIAL_STATE } from './constants/initialState'
 import { generateRandomData } from './utils/randomData'
-import { exportPayslipToPdf } from './utils/pdfExport'
+import { exportPayslipToPdf, exportToPng, exportToZip } from './utils/pdfExport'
 import Editor from './components/Editor'
 import Preview from './components/Preview'
 import './index.css'
@@ -120,13 +120,29 @@ function App() {
             className="action-btn primary"
             onClick={() => setState(generateRandomData())}
           >
-            🎲 Random Data
+            🎲 Random
           </button>
           <button
             className="action-btn secondary"
             onClick={() => exportPayslipToPdf(state)}
+            title="Download current document as PDF"
           >
-            📥 Download PDF
+            📄 PDF
+          </button>
+          <button
+            className="action-btn secondary"
+            onClick={() => exportToPng(state, docType)}
+            title="Download current document as PNG"
+          >
+            🖼️ PNG
+          </button>
+          <button
+            className="action-btn secondary"
+            onClick={() => exportToZip(state, setDocType)}
+            title="Download ALL documents as ZIP"
+            style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
+          >
+            📦 ZIP All
           </button>
           <a
             href="https://thanhnguyxn.github.io/student-card-generator/"
@@ -135,7 +151,7 @@ function App() {
             className="action-btn"
             style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)', textDecoration: 'none' }}
           >
-            🎓 Student ID
+            🎓 Student
           </a>
         </div>
       </nav>

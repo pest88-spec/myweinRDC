@@ -1,5 +1,6 @@
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import JSZip from 'jszip';
 
 /**
  * Sanitize a string for use in filenames
@@ -88,5 +89,99 @@ export async function exportPayslipToPdf(state) {
     } catch (error) {
         console.error('PDF export failed:', error);
         alert('Failed to export PDF. Please try again.');
+    }
+}
+
+/**
+ * Export the current document to PNG
+ * @param {object} state - Application state
+ * @param {string} docType - Document type name
+ */
+export async function exportToPng(state, docType = 'payslip') {
+    const element = document.querySelector('.payslip-container');
+
+    if (!element) {
+        alert('Document preview not found!');
+        return;
+    }
+
+    try {
+        const canvas = await html2canvas(element, {
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            scale: 2,
+        });
+
+        const link = document.createElement('a');
+        const employeeName = sanitizeFilename(state.employee?.name || 'Employee');
+        const payPeriod = formatPayPeriod(state.meta?.payDate);
+        link.download = `${docType}_${employeeName}_${payPeriod}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    } catch (error) {
+        console.error('PNG export failed:', error);
+        alert('Failed to export PNG. Please try again.');
+    }
+}
+
+/**
+ * Export all documents to ZIP
+ * @param {object} state - Application state
+ * @param {function} setDocType - Function to switch document type
+ * @param {Array} docTypes - Array of document types to export
+ */
+export async function exportToZip(state, setDocType, docTypes = ['payslip', 'tax', 'w2', 'employment', 'offer']) {
+    const zip = new JSZip();
+    const employeeName = sanitizeFilename(state.employee?.name || 'Employee');
+    const payPeriod = formatPayPeriod(state.meta?.payDate);
+
+    const docLabels = {
+        payslip: 'Payslip',
+        tax: 'Tax_Form',
+        w2: 'W2_Form',
+        employment: 'Employment_Letter',
+        offer: 'Offer_Letter'
+    };
+
+    try {
+        for (const docType of docTypes) {
+            // Switch to this document type
+            setDocType(docType);
+
+            // Wait for render
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            const element = document.querySelector('.payslip-container');
+            if (!element) continue;
+
+            const canvas = await html2canvas(element, {
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#ffffff',
+                scale: 2,
+            });
+
+            // Convert to blob and add to ZIP
+            const dataUrl = canvas.toDataURL('image/png');
+            const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '');
+            const filename = `${docLabels[docType]}_${employeeName}_${payPeriod}.png`;
+            zip.file(filename, base64Data, { base64: true });
+        }
+
+        // Generate and download ZIP
+        const content = await zip.generateAsync({ type: 'blob' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(content);
+        link.download = `Documents_${employeeName}_${payPeriod}.zip`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+
+        // Switch back to payslip
+        setDocType('payslip');
+
+    } catch (error) {
+        console.error('ZIP export failed:', error);
+        alert('Failed to export ZIP. Please try again.');
     }
 }
