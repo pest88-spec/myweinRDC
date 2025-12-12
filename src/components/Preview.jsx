@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { calculateTotalEarnings, calculateTotalDeductions, calculateNetPay, formatCurrency } from '../utils/calculations';
 
 const Preview = ({ state }) => {
@@ -7,9 +7,69 @@ const Preview = ({ state }) => {
     const totalDeductions = calculateTotalDeductions(deductions);
     const netPay = calculateNetPay(earnings, deductions);
 
+    // Zoom state
+    const [zoomLevel, setZoomLevel] = useState(100);
+
+    // Drag state
+    const [isDragging, setIsDragging] = useState(false);
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+    const containerRef = useRef(null);
+
+    const handleZoomIn = () => {
+        if (zoomLevel < 200) setZoomLevel(prev => prev + 25);
+    };
+
+    const handleZoomOut = () => {
+        if (zoomLevel > 25) setZoomLevel(prev => prev - 25);
+    };
+
+    const handleMouseDown = (e) => {
+        if (e.target.closest('.zoom-controls')) return; // Don't drag when clicking zoom controls
+        setIsDragging(true);
+        setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isDragging) return;
+        setPosition({
+            x: e.clientX - dragStart.x,
+            y: e.clientY - dragStart.y
+        });
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    const handleMouseLeave = () => {
+        setIsDragging(false);
+    };
+
     return (
-        <div className="preview-panel">
-            <div className="payslip-container">
+        <div
+            className="preview-panel"
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
+            style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+        >
+            {/* Zoom Controls */}
+            <div className="zoom-controls">
+                <button onClick={handleZoomOut} className="zoom-btn" title="Zoom Out">−</button>
+                <span className="zoom-level">{zoomLevel}%</span>
+                <button onClick={handleZoomIn} className="zoom-btn" title="Zoom In">+</button>
+            </div>
+
+            <div
+                className="payslip-container"
+                ref={containerRef}
+                style={{
+                    transform: `scale(${zoomLevel / 100}) translate(${position.x}px, ${position.y}px)`,
+                    transformOrigin: 'top center'
+                }}
+            >
 
                 {/* Header Section */}
                 <header className="payslip-header-centered">
@@ -156,3 +216,4 @@ const Preview = ({ state }) => {
 };
 
 export default Preview;
+

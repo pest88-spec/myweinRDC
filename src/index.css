@@ -365,7 +365,8 @@ body {
   }
 
   .app-header,
-  .editor-panel {
+  .editor-panel,
+  .zoom-controls {
     display: none;
   }
 
@@ -380,6 +381,7 @@ body {
     background: white;
     overflow: visible;
     display: block;
+    cursor: default !important;
   }
 
   .payslip-container {
@@ -391,7 +393,82 @@ body {
     /* Keep padding */
     margin: 0;
     border: none;
+    transform: none !important;
   }
+}
+
+/* Zoom Controls */
+.zoom-controls {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  user-select: none;
+}
+
+.zoom-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.zoom-btn:hover {
+  background: #1d4ed8;
+}
+
+.zoom-level {
+  min-width: 50px;
+  text-align: center;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Responsive Layout */
+@media (max-width: 900px) {
+  .main-content {
+    flex-direction: column;
+  }
+
+  .editor-panel {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    max-height: 50vh;
+  }
+
+  .preview-panel {
+    width: 100%;
+    min-height: 50vh;
+  }
+}
+
+/* Hide scrollbars */
+.preview-panel::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
+.preview-panel {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  position: relative;
 }
 
 /* Footer Styles */
@@ -434,6 +511,11 @@ body {
 
 .github-link {
   background-color: #24292e;
+  color: #ffffff;
+}
+
+.student-link {
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: #ffffff;
 }
 

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { INITIAL_STATE } from './constants/initialState'
 import { generateRandomData } from './utils/randomData'
+import { exportPayslipToPdf } from './utils/pdfExport'
 import Editor from './components/Editor'
 import Preview from './components/Preview'
 import './index.css'
@@ -63,7 +64,7 @@ function App() {
             Fill Random Data
           </button>
           <button
-            onClick={() => window.print()}
+            onClick={() => exportPayslipToPdf(state)}
             style={{
               padding: '0.5rem 1rem',
               backgroundColor: '#2563eb',
@@ -90,6 +91,14 @@ function App() {
       </main>
       <footer className="app-footer">
         <div className="footer-links">
+          <a
+            href="https://thanhnguyxn.github.io/student-card-generator/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-link student-link"
+          >
+            🎓 Student ID Generator
+          </a>
           <a
             href="https://buymeacoffee.com/thanhnguyxn"
             target="_blank"

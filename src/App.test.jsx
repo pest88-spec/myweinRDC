@@ -5,7 +5,8 @@ import App from './App';
 describe('App Component', () => {
     it('renders the header correctly', () => {
         render(<App />);
-        expect(screen.getByText(/Payslip Generator/i)).toBeInTheDocument();
+        const elements = screen.getAllByText(/Payslip Generator/i);
+        expect(elements.length).toBeGreaterThan(0);
     });
 
     it('renders the editor and preview sections', () => {
