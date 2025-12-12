@@ -9,6 +9,7 @@ import './index.css'
 function App() {
   const [state, setState] = useState(INITIAL_STATE)
   const [docType, setDocType] = useState('payslip') // 'payslip', 'tax', 'employment'
+  const [mode, setMode] = useState('employee') // 'employee' or 'contractor'
   const [companyLogo, setCompanyLogo] = useState(null)
   const logoInputRef = useRef(null)
 
@@ -62,9 +63,23 @@ function App() {
       {/* Modern Navigation Bar */}
       <nav className="nav-bar">
         <div className="nav-left">
-          <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'white' }}>
+          <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'white', marginRight: '1rem' }}>
             💼 Payslip Generator
           </span>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button
+              className={`tab-btn ${mode === 'employee' ? 'active' : ''}`}
+              onClick={() => setMode('employee')}
+            >
+              Employee
+            </button>
+            <button
+              className={`tab-btn ${mode === 'contractor' ? 'active' : ''}`}
+              onClick={() => setMode('contractor')}
+            >
+              Contractor
+            </button>
+          </div>
         </div>
 
         <div className="nav-center">
@@ -118,6 +133,7 @@ function App() {
         <Preview
           state={state}
           docType={docType}
+          mode={mode}
           companyLogo={companyLogo}
         />
       </main>

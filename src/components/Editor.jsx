@@ -7,7 +7,6 @@ const Editor = ({ state, onChange, onArrayChange, onAdd, onRemove, companyLogo, 
 
     return (
         <div className="editor-panel">
-            <h1 className="sidebar-title">💼 Payslip Generator</h1>
             <p className="sidebar-subtitle">Generate professional payslips and employment documents</p>
 
             {/* Company Logo Upload */}

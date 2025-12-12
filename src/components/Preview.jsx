@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { calculateTotalEarnings, calculateTotalDeductions, calculateNetPay, formatCurrency } from '../utils/calculations';
 
-const Preview = ({ state, docType = 'payslip', companyLogo }) => {
+const Preview = ({ state, docType = 'payslip', mode = 'employee', companyLogo }) => {
     const { company, bank, employee, meta, earnings, deductions } = state;
     const totalEarnings = calculateTotalEarnings(earnings);
     const totalDeductions = calculateTotalDeductions(deductions);
@@ -42,12 +42,19 @@ const Preview = ({ state, docType = 'payslip', companyLogo }) => {
 
     const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
+    // Mode-specific labels
+    const isContractor = mode === 'contractor';
+    const personLabel = isContractor ? 'Contractor' : 'Employee';
+    const docTitle = isContractor ? 'INVOICE' : 'Payslip';
+    const statusLabel = isContractor ? 'Contract type' : 'Employment status';
+    const statusValue = isContractor ? 'Independent Contractor' : 'Full time';
+
     // Render different document types
     const renderPayslip = () => (
         <>
             <header className="payslip-header-centered">
                 {companyLogo && <img src={companyLogo} alt="Logo" className="company-logo" />}
-                <h1>Payslip</h1>
+                <h1>{docTitle}</h1>
                 <h2 className="company-name">{company.name.toUpperCase()}</h2>
                 <div className="company-contact">
                     {company.phone && <span>Phone: {company.phone} | </span>}
@@ -63,10 +70,10 @@ const Preview = ({ state, docType = 'payslip', companyLogo }) => {
 
             <section className="info-grid-compact">
                 <div className="info-column">
-                    <div className="info-row"><span className="label">Employee name:</span><span className="value">{employee.name.toUpperCase()}</span></div>
-                    <div className="info-row"><span className="label">Employment status:</span><span className="value">Full time</span></div>
-                    <div className="info-row"><span className="label">Award/Agreement:</span><span className="value">2024-2025 Employment Contract</span></div>
-                    <div className="info-row"><span className="label">Classification:</span><span className="value">{employee.position}</span></div>
+                    <div className="info-row"><span className="label">{personLabel} name:</span><span className="value">{employee.name.toUpperCase()}</span></div>
+                    <div className="info-row"><span className="label">{statusLabel}:</span><span className="value">{statusValue}</span></div>
+                    <div className="info-row"><span className="label">{isContractor ? 'Contract:' : 'Award/Agreement:'}</span><span className="value">2024-2025 {isContractor ? 'Service Agreement' : 'Employment Contract'}</span></div>
+                    <div className="info-row"><span className="label">{isContractor ? 'Service type:' : 'Classification:'}</span><span className="value">{employee.position}</span></div>
                     <div className="info-row"><span className="label">Hourly rate:</span><span className="value">{formatCurrency(employee.payRate)}</span></div>
                     <div className="info-row"><span className="label">Annual salary:</span><span className="value">{formatCurrency(employee.payRate * 38 * 52)}</span></div>
                 </div>
