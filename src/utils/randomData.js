@@ -22,7 +22,24 @@ export const generateRandomData = () => {
         { name: "National University of Singapore", address: "21 Lower Kent Ridge Rd, Singapore 119077", phone: "+65 6516 6666", website: "nus.edu.sg" },
         { name: "University of Toronto", address: "27 King's College Circle, Toronto, Ontario M5S 1A1, Canada", phone: "+1 416-978-2011", website: "www.utoronto.ca" },
         { name: "Tsinghua University", address: "30 Shuangqing Rd, Haidian District, Beijing, China", phone: "+86 10 6279 3001", website: "www.tsinghua.edu.cn" },
-        { name: "RMIT University", address: "124 La Trobe St, Melbourne VIC 3000, Australia", phone: "+61 3 9925 2000", website: "www.rmit.edu.au" }
+        { name: "RMIT University", address: "124 La Trobe St, Melbourne VIC 3000, Australia", phone: "+61 3 9925 2000", website: "www.rmit.edu.au" },
+        // Tech Giants
+        { name: "Google LLC", address: "1600 Amphitheatre Parkway, Mountain View, CA 94043", phone: "+1 (650) 253-0000", website: "www.google.com" },
+        { name: "Microsoft Corporation", address: "One Microsoft Way, Redmond, WA 98052", phone: "+1 (425) 882-8080", website: "www.microsoft.com" },
+        { name: "Apple Inc.", address: "One Apple Park Way, Cupertino, CA 95014", phone: "+1 (408) 996-1010", website: "www.apple.com" },
+        { name: "Amazon.com Inc.", address: "410 Terry Avenue North, Seattle, WA 98109", phone: "+1 (206) 266-1000", website: "www.amazon.com" },
+        { name: "Meta Platforms Inc.", address: "1 Hacker Way, Menlo Park, CA 94025", phone: "+1 (650) 543-4800", website: "www.meta.com" },
+        { name: "Netflix Inc.", address: "100 Winchester Circle, Los Gatos, CA 95032", phone: "+1 (408) 540-3700", website: "www.netflix.com" },
+        { name: "Tesla Inc.", address: "3500 Deer Creek Road, Palo Alto, CA 94304", phone: "+1 (650) 681-5000", website: "www.tesla.com" },
+        { name: "NVIDIA Corporation", address: "2788 San Tomas Expressway, Santa Clara, CA 95051", phone: "+1 (408) 486-2000", website: "www.nvidia.com" },
+        // Major Corps
+        { name: "Goldman Sachs Group Inc.", address: "200 West Street, New York, NY 10282", phone: "+1 (212) 902-1000", website: "www.goldmansachs.com" },
+        { name: "JPMorgan Chase & Co.", address: "383 Madison Avenue, New York, NY 10179", phone: "+1 (212) 270-6000", website: "www.jpmorganchase.com" },
+        { name: "McKinsey & Company", address: "55 East 52nd Street, New York, NY 10022", phone: "+1 (212) 446-7000", website: "www.mckinsey.com" },
+        { name: "Deloitte Touche Tohmatsu", address: "30 Rockefeller Plaza, New York, NY 10112", phone: "+1 (212) 492-4000", website: "www.deloitte.com" },
+        { name: "PwC International Ltd.", address: "1 Embankment Place, London WC2N 6RH, UK", phone: "+44 20 7583 5000", website: "www.pwc.com" },
+        { name: "Boeing Company", address: "929 Long Bridge Drive, Arlington, VA 22202", phone: "+1 (312) 544-2000", website: "www.boeing.com" },
+        { name: "Lockheed Martin Corp.", address: "6801 Rockledge Drive, Bethesda, MD 20817", phone: "+1 (301) 897-6000", website: "www.lockheedmartin.com" }
     ];
 
     const banks = [
