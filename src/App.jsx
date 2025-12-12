@@ -96,10 +96,22 @@ function App() {
             Tax Form
           </button>
           <button
+            className={`tab-btn ${docType === 'w2' ? 'active' : ''}`}
+            onClick={() => setDocType('w2')}
+          >
+            W-2
+          </button>
+          <button
             className={`tab-btn ${docType === 'employment' ? 'active' : ''}`}
             onClick={() => setDocType('employment')}
           >
-            Employment Letter
+            Employment
+          </button>
+          <button
+            className={`tab-btn ${docType === 'offer' ? 'active' : ''}`}
+            onClick={() => setDocType('offer')}
+          >
+            Offer Letter
           </button>
         </div>
 
@@ -116,6 +128,15 @@ function App() {
           >
             📥 Download PDF
           </button>
+          <a
+            href="https://thanhnguyxn.github.io/student-card-generator/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="action-btn"
+            style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)', textDecoration: 'none' }}
+          >
+            🎓 Student ID
+          </a>
         </div>
       </nav>
 

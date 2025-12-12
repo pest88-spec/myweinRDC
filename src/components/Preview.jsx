@@ -235,6 +235,130 @@ const Preview = ({ state, docType = 'payslip', mode = 'employee', companyLogo })
         </>
     );
 
+    // W-2 Tax Form
+    const renderW2 = () => (
+        <>
+            <header className="payslip-header-centered">
+                {companyLogo && <img src={companyLogo} alt="Logo" className="company-logo" />}
+                <h1 style={{ fontSize: '1.5rem', color: '#0f4c81' }}>Form W-2 Wage and Tax Statement</h1>
+                <p style={{ fontSize: '0.8rem', color: '#666' }}>Copy B — To Be Filed With Employee's FEDERAL Tax Return</p>
+            </header>
+
+            <hr className="divider-blue" />
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '30px' }}>
+                <div style={{ border: '1px solid #ccc', padding: '15px' }}>
+                    <div style={{ fontSize: '0.7rem', color: '#666', marginBottom: '5px' }}>a. Employee's social security number</div>
+                    <div style={{ fontWeight: 'bold' }}>XXX-XX-{employee.employeeId?.slice(-4) || '1234'}</div>
+                </div>
+                <div style={{ border: '1px solid #ccc', padding: '15px' }}>
+                    <div style={{ fontSize: '0.7rem', color: '#666', marginBottom: '5px' }}>b. Employer identification number (EIN)</div>
+                    <div style={{ fontWeight: 'bold' }}>XX-XXXXXXX</div>
+                </div>
+            </div>
+
+            <div style={{ border: '1px solid #ccc', padding: '15px', marginBottom: '20px' }}>
+                <div style={{ fontSize: '0.7rem', color: '#666', marginBottom: '5px' }}>c. Employer's name, address, and ZIP code</div>
+                <div style={{ fontWeight: 'bold' }}>{company.name}</div>
+                <div>{company.address}</div>
+            </div>
+
+            <div style={{ border: '1px solid #ccc', padding: '15px', marginBottom: '20px' }}>
+                <div style={{ fontSize: '0.7rem', color: '#666', marginBottom: '5px' }}>e. Employee's name, address, and ZIP code</div>
+                <div style={{ fontWeight: 'bold' }}>{employee.name}</div>
+                <div>{employee.address}</div>
+            </div>
+
+            <table className="payslip-table-modern" style={{ marginBottom: '20px' }}>
+                <thead><tr><th>Box</th><th>Description</th><th className="col-right">Amount</th></tr></thead>
+                <tbody>
+                    <tr><td>1</td><td>Wages, tips, other compensation</td><td className="col-right">{formatCurrency(totalEarnings * 12)}</td></tr>
+                    <tr><td>2</td><td>Federal income tax withheld</td><td className="col-right">{formatCurrency(totalEarnings * 12 * 0.22)}</td></tr>
+                    <tr><td>3</td><td>Social security wages</td><td className="col-right">{formatCurrency(totalEarnings * 12)}</td></tr>
+                    <tr><td>4</td><td>Social security tax withheld</td><td className="col-right">{formatCurrency(totalEarnings * 12 * 0.062)}</td></tr>
+                    <tr><td>5</td><td>Medicare wages and tips</td><td className="col-right">{formatCurrency(totalEarnings * 12)}</td></tr>
+                    <tr><td>6</td><td>Medicare tax withheld</td><td className="col-right">{formatCurrency(totalEarnings * 12 * 0.0145)}</td></tr>
+                </tbody>
+            </table>
+
+            <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '30px' }}>
+                <p>This information is being furnished to the Internal Revenue Service.</p>
+                <p style={{ marginTop: '10px' }}>Tax Year: {new Date().getFullYear()}</p>
+            </div>
+        </>
+    );
+
+    // Offer Letter
+    const renderOfferLetter = () => (
+        <>
+            <header style={{ marginBottom: '30px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+                    {companyLogo && <img src={companyLogo} alt="Logo" className="company-logo" style={{ marginRight: '20px' }} />}
+                    <div>
+                        <h2 style={{ margin: 0, color: '#0f4c81' }}>{company.name.toUpperCase()}</h2>
+                        <div style={{ fontSize: '0.85rem', color: '#555' }}>{company.address}</div>
+                    </div>
+                </div>
+            </header>
+
+            <div style={{ textAlign: 'right', marginBottom: '30px', fontSize: '0.9rem' }}>
+                Date: {today}
+            </div>
+
+            <div style={{ marginBottom: '20px' }}>
+                <strong>{employee.name}</strong><br />
+                {employee.address}
+            </div>
+
+            <h1 style={{ textAlign: 'center', fontSize: '1.3rem', marginBottom: '30px', color: '#0f4c81' }}>
+                OFFER OF EMPLOYMENT
+            </h1>
+
+            <div style={{ lineHeight: 1.8, fontSize: '0.95rem' }}>
+                <p>Dear {employee.name},</p>
+
+                <p style={{ marginTop: '20px' }}>
+                    We are pleased to offer you the position of <strong>{employee.position}</strong> at <strong>{company.name}</strong>.
+                    We believe your skills and experience will be a valuable asset to our team.
+                </p>
+
+                <p style={{ marginTop: '20px' }}><strong>Position Details:</strong></p>
+                <ul style={{ marginLeft: '20px' }}>
+                    <li><strong>Title:</strong> {employee.position}</li>
+                    <li><strong>Start Date:</strong> {meta.payPeriodStart}</li>
+                    <li><strong>Compensation:</strong> {formatCurrency(employee.payRate * 38 * 52)} per year ({formatCurrency(employee.payRate)}/hour)</li>
+                    <li><strong>Employment Type:</strong> Full-time</li>
+                    <li><strong>Benefits:</strong> Health insurance, 401(k), Paid time off</li>
+                </ul>
+
+                <p style={{ marginTop: '20px' }}>
+                    This offer is contingent upon successful completion of a background check and reference verification.
+                </p>
+
+                <p style={{ marginTop: '20px' }}>
+                    Please sign and return this letter within <strong>7 business days</strong> to confirm your acceptance.
+                </p>
+
+                <p style={{ marginTop: '40px' }}>We look forward to welcoming you to our team!</p>
+
+                <div style={{ marginTop: '40px', display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <div style={{ borderTop: '1px solid #333', width: '200px', paddingTop: '5px', marginTop: '50px' }}>
+                            <strong>HR Manager</strong><br />
+                            {company.name}
+                        </div>
+                    </div>
+                    <div>
+                        <div style={{ borderTop: '1px solid #333', width: '200px', paddingTop: '5px', marginTop: '50px' }}>
+                            <strong>Acceptance Signature</strong><br />
+                            {employee.name}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+
     return (
         <div
             className="preview-panel"
@@ -259,10 +383,13 @@ const Preview = ({ state, docType = 'payslip', mode = 'employee', companyLogo })
             >
                 {docType === 'payslip' && renderPayslip()}
                 {docType === 'tax' && renderTaxForm()}
+                {docType === 'w2' && renderW2()}
                 {docType === 'employment' && renderEmploymentLetter()}
+                {docType === 'offer' && renderOfferLetter()}
             </div>
         </div>
     );
 };
 
 export default Preview;
+
