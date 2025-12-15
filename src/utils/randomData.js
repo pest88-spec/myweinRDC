@@ -1,7 +1,31 @@
+// Salary ranges by position (annual salary in USD)
+const SALARY_RANGES = {
+    "Teacher": { min: 45000, max: 65000 },
+    "Lecturer": { min: 45000, max: 65000 },
+    "Assistant Professor": { min: 65000, max: 85000 },
+    "Associate Professor": { min: 80000, max: 110000 },
+    "Professor": { min: 100000, max: 140000 },
+    "Head of Department": { min: 90000, max: 130000 },
+    "Vice Principal": { min: 85000, max: 120000 },
+    "Office Administrator": { min: 40000, max: 60000 },
+    "Security Officer": { min: 35000, max: 50000 },
+    "Accountant": { min: 55000, max: 80000 },
+    "Researcher": { min: 60000, max: 90000 },
+    "Lab Technician": { min: 40000, max: 55000 },
+    "Clinical Professor": { min: 90000, max: 120000 }
+};
+
+// Get monthly salary based on position
+function getMonthlySalary(position) {
+    const range = SALARY_RANGES[position] || { min: 50000, max: 80000 };
+    const annualSalary = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+    return Math.round(annualSalary / 12);
+}
+
 export const generateRandomData = () => {
     const firstNames = ["James", "Mary", "John", "Patricia", "Robert", "Jennifer", "Michael", "Linda", "William", "Elizabeth", "David", "Barbara", "Richard", "Susan", "Joseph", "Jessica", "Thomas", "Sarah", "Charles", "Karen", "Hiroshi", "Yuki", "Wei", "Li", "Fatima", "Mohammed", "Sven", "Ingrid"];
     const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin", "Lee", "Perez", "Thompson", "White", "Harris", "Sanchez", "Clark", "Ramirez", "Lewis", "Robinson", "Walker", "Young", "Allen", "King", "Wright", "Scott", "Torres", "Nguyen", "Hill", "Flores", "Green", "Adams", "Nelson", "Baker", "Hall", "Rivera", "Campbell", "Mitchell", "Carter", "Roberts"];
-    const positions = ["Teacher", "Head of Department", "Vice Principal", "Office Administrator", "Security Officer", "Accountant", "Lecturer", "Professor", "Researcher", "Lab Technician"];
+    const positions = ["Teacher", "Lecturer", "Assistant Professor", "Associate Professor", "Professor", "Head of Department", "Vice Principal", "Office Administrator", "Researcher", "Lab Technician"];
 
     const schools = [
         { name: "Brooklyn Technical High School", address: "29 Fort Greene Place, Brooklyn, NY 11217", phone: "(718) 804-6400", website: "www.bths.edu" },
@@ -48,15 +72,23 @@ export const generateRandomData = () => {
 
     const random = (arr) => arr[Math.floor(Math.random() * arr.length)];
     const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-    const randomFloat = (min, max) => (Math.random() * (max - min) + min).toFixed(2);
 
     const selectedSchool = random(schools);
+    const selectedPosition = random(positions);
+    const baseSalary = getMonthlySalary(selectedPosition);
 
     // Generate realistic international address
     const streetNames = ["Main St", "High St", "Park Ave", "Broadway", "Maple Dr", "Oak St", "Cedar Ln", "Sunset Blvd", "Victoria St", "George St"];
     const cities = ["New York", "London", "Sydney", "Tokyo", "Paris", "Berlin", "Toronto", "Singapore", "Los Angeles", "Melbourne"];
 
     const employeeAddress = `${randomInt(1, 999)} ${random(streetNames)}, ${random(cities)}`;
+
+    // Calculate deductions based on base salary
+    const federalTax = Math.round(baseSalary * (0.12 + Math.random() * 0.10)); // 12-22%
+    const stateTax = Math.round(baseSalary * (0.04 + Math.random() * 0.06)); // 4-10%
+    const cityTax = Math.round(baseSalary * (0.01 + Math.random() * 0.02)); // 1-3%
+    const fica = Math.round(baseSalary * 0.0765); // 7.65% FICA
+    const medicare = Math.round(baseSalary * 0.0145); // 1.45% Medicare
 
     return {
         company: {
@@ -74,32 +106,27 @@ export const generateRandomData = () => {
         employee: {
             name: `${random(firstNames)} ${random(lastNames)}`,
             address: employeeAddress,
-            position: random(positions),
-            employeeId: `NV${randomInt(1000, 9999)}`,
-            taxCode: ["MST-001", "MST-002"][randomInt(0, 1)],
-            payRate: parseFloat(randomFloat(50000, 200000)) // Adjusted for VND (hourly maybe? or just a base unit) - keeping simple number for now, user can adjust format later. Actually let's keep it somewhat compatible with the previous range but maybe higher if it's VND? 
-            // The previous code had 35-85. If this is hourly in USD, it's high. If it's k VND, it's 35k-85k. 
-            // Let's assume the user wants realistic numbers. 50k - 500k VND per hour is reasonable for teachers/staff.
-            // Let's use 50-500 for now to avoid breaking layout with millions if it expects small numbers.
-            // Wait, the earnings calculation uses this. 
-            // Let's stick to a generic number range that looks okay, maybe 100-500.
+            position: selectedPosition,
+            employeeId: `EMP-${randomInt(100000, 999999)}`,
+            taxCode: ["W-4", "1040-ES"][randomInt(0, 1)],
+            payRate: baseSalary
         },
         meta: {
             payDate: new Date().toISOString().split('T')[0],
-            payPeriodStart: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Monthly
+            payPeriodStart: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
             payPeriodEnd: new Date().toISOString().split('T')[0],
         },
         earnings: [
-            { id: 1, description: "Regular Academic", quantity: 1, rate: 0, amount: parseFloat(randomFloat(3000, 10000)) },
-            { id: 2, description: "Department Chair", quantity: 1, rate: 1000, amount: 1000 },
-            { id: 3, description: "Per Session", quantity: randomInt(0, 10), rate: 50, amount: 0 }
+            { id: 1, description: "Regular Academic", quantity: 1, rate: baseSalary, amount: baseSalary },
+            { id: 2, description: selectedPosition.includes("Professor") || selectedPosition.includes("Head") ? "Department Stipend" : "Per Diem", quantity: 1, rate: Math.round(baseSalary * 0.1), amount: Math.round(baseSalary * 0.1) },
+            { id: 3, description: "Per Session", quantity: randomInt(0, 8), rate: 75, amount: 0 }
         ].map(item => ({ ...item, amount: item.amount || item.quantity * item.rate })),
         deductions: [
-            { id: 1, description: "Federal Tax", amount: parseFloat(randomFloat(200, 1000)) },
-            { id: 2, description: "State Tax", amount: parseFloat(randomFloat(100, 500)) },
-            { id: 3, description: "City Tax", amount: parseFloat(randomFloat(50, 200)) },
-            { id: 4, description: "FICA", amount: parseFloat(randomFloat(100, 300)) },
-            { id: 5, description: "Medicare", amount: parseFloat(randomFloat(50, 150)) }
+            { id: 1, description: "Federal Tax", amount: federalTax },
+            { id: 2, description: "State Tax", amount: stateTax },
+            { id: 3, description: "City Tax", amount: cityTax },
+            { id: 4, description: "FICA", amount: fica },
+            { id: 5, description: "Medicare", amount: medicare }
         ]
     };
 };
