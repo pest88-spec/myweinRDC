@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { calculateTotalEarnings, calculateTotalDeductions, calculateNetPay, formatCurrency } from '../utils/calculations';
+import { calculateTotalEarnings, calculateNetPay, formatCurrency } from '../utils/calculations';
 import { UNIVERSITIES, getUniversityFromHash } from '../data/universities';
 
 const Preview = ({ state, docType = 'payslip', mode = 'employee', companyLogo, cardStyle = 'original', photoBase64 }) => {
-    const { company, bank, employee, meta, earnings, deductions } = state;
+    const { company, bank, employee, meta, earnings, deductions, taxes, preTaxReductions, employerContributions, taxableWages, checkInfo } = state;
     const totalEarnings = calculateTotalEarnings(earnings);
-    const totalDeductions = calculateTotalDeductions(deductions);
-    const netPay = calculateNetPay(earnings, deductions);
+    const netPay = checkInfo?.netPay || calculateNetPay(earnings, deductions);
 
     // Zoom state
     const [zoomLevel, setZoomLevel] = useState(70);
@@ -46,84 +45,310 @@ const Preview = ({ state, docType = 'payslip', mode = 'employee', companyLogo, c
     // Mode-specific labels
     const isContractor = mode === 'contractor';
     const personLabel = isContractor ? 'Contractor' : 'Employee';
-    const docTitle = isContractor ? 'INVOICE' : 'Payslip';
-    const statusLabel = isContractor ? 'Contract type' : 'Employment status';
-    const statusValue = isContractor ? 'Independent Contractor' : 'Full time';
+    const docTitle = isContractor ? 'INVOICE' : 'SALARY WARRANT';
+    const statusLabel = isContractor ? 'Contract Type' : 'Employment Status';
+    const statusValue = isContractor ? 'Independent Contractor' : 'Full Time';
 
     // Render different document types
-    const renderPayslip = () => (
-        <>
-            <header className="payslip-header-centered">
-                {companyLogo && <img src={companyLogo} alt="Logo" className="company-logo" />}
-                <h1>{docTitle}</h1>
-                <h2 className="company-name">{company.name.toUpperCase()}</h2>
-                <div className="company-contact">
-                    {company.phone && <span>Phone: {company.phone} | </span>}
-                    {company.email && <span>Email: {company.email}</span>}
-                </div>
-                <div className="company-address">Address: {company.address}</div>
-                <div className="company-website">
-                    <a href={company.website?.startsWith('http') ? company.website : `https://${company.website}`} target="_blank" rel="noreferrer">{company.website}</a>
-                </div>
-            </header>
+    const renderPayslip = () => {
+        // Calculate totals from arrays
+        const totalTaxes = (taxes || []).reduce((sum, t) => sum + (t.amount || 0), 0);
+        const totalPreTax = (preTaxReductions || []).reduce((sum, t) => sum + (t.amount || 0), 0);
+        const totalOtherDed = (deductions || []).reduce((sum, t) => sum + (t.amount || 0), 0);
 
-            <hr className="divider-blue" />
+        return (
+            <>
+                {/* Header - Salary Warrant Style */}
+                <header className="payslip-header-centered" style={{ borderBottom: '2px solid #000', paddingBottom: '15px' }}>
+                    <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '1.3rem', letterSpacing: '1px' }}>SALARY WARRANT</div>
+                    <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '1rem', marginTop: '5px' }}>CERTIFICATED</div>
+                    <div style={{ textAlign: 'center', marginTop: '10px' }}>
+                        <div style={{ fontSize: '0.9rem' }}>{company.county || 'District County'}</div>
+                        <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{company.district || company.name}</div>
+                        <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>{company.name}</div>
+                    </div>
+                </header>
 
-            <section className="info-grid-compact">
-                <div className="info-column">
-                    <div className="info-row"><span className="label">{personLabel} name:</span><span className="value">{employee.name.toUpperCase()}</span></div>
-                    <div className="info-row"><span className="label">{statusLabel}:</span><span className="value">{statusValue}</span></div>
-                    <div className="info-row"><span className="label">{isContractor ? 'Contract:' : 'Award/Agreement:'}</span><span className="value">2024-2025 {isContractor ? 'Service Agreement' : 'Employment Contract'}</span></div>
-                    <div className="info-row"><span className="label">{isContractor ? 'Service type:' : 'Classification:'}</span><span className="value">{employee.position}</span></div>
-                    <div className="info-row"><span className="label">Hourly rate:</span><span className="value">{formatCurrency(employee.payRate)}</span></div>
-                    <div className="info-row"><span className="label">Annual salary:</span><span className="value">{formatCurrency(employee.payRate * 38 * 52)}</span></div>
-                </div>
-                <div className="info-column">
-                    <div className="info-row"><span className="label">Pay period:</span><span className="value">{meta.payPeriodStart} to {meta.payPeriodEnd}</span></div>
-                    <div className="info-row"><span className="label">Pay date:</span><span className="value">{meta.payDate}</span></div>
-                    <div className="info-row"><span className="label">Annual leave balance:</span><span className="value">48 hours</span></div>
-                    <div className="info-row"><span className="label">Sick/carer's leave:</span><span className="value">40 hours</span></div>
-                </div>
-            </section>
+                {/* Employee Info + Pay Period Info */}
+                <section style={{ display: 'flex', justifyContent: 'space-between', margin: '15px 0', gap: '20px' }}>
+                    <div style={{ flex: 1 }}>
+                        <div className="info-row"><span className="label">EMPLOYEE:</span> <span className="value">{employee.name}</span></div>
+                        <div className="info-row"><span className="label">ID:</span> <span className="value">{employee.employeeId}</span></div>
+                        <div className="info-row"><span className="label">POSITION:</span> <span className="value">{employee.position}</span></div>
+                    </div>
+                    <div style={{ minWidth: '220px' }}>
+                        <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: '0.85rem' }}>
+                            <tbody>
+                                <tr><td style={{ border: '1px solid #000', padding: '4px 8px', fontWeight: 'bold' }}>PAY LOCATION</td><td style={{ border: '1px solid #000', padding: '4px 8px' }}>{meta.payLocation || '050'}</td></tr>
+                                <tr><td style={{ border: '1px solid #000', padding: '4px 8px', fontWeight: 'bold' }}>PAY CYCLE</td><td style={{ border: '1px solid #000', padding: '4px 8px' }}>{meta.payCycle || 'C1B'}</td></tr>
+                                <tr><td style={{ border: '1px solid #000', padding: '4px 8px', fontWeight: 'bold' }}>ISSUE DATE</td><td style={{ border: '1px solid #000', padding: '4px 8px' }}>{meta.payDate}</td></tr>
+                                <tr><td style={{ border: '1px solid #000', padding: '4px 8px', fontWeight: 'bold' }}>ADVICE NUMBER</td><td style={{ border: '1px solid #000', padding: '4px 8px' }}>{meta.adviceNumber || '1234567'}</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
 
-            <section className="table-section">
-                <h3 className="section-title">Entitlements</h3>
-                <table className="payslip-table-modern">
-                    <thead><tr><th className="col-desc">Description</th><th className="col-center">Hours/units</th><th className="col-right">Rate</th><th className="col-right">Total</th></tr></thead>
-                    <tbody>
-                        {earnings.map(item => (
-                            <tr key={item.id}><td>{item.description}</td><td className="col-center">{item.quantity}</td><td className="col-right">{formatCurrency(item.rate)}</td><td className="col-right">{formatCurrency(item.amount)}</td></tr>
-                        ))}
-                    </tbody>
-                    <tfoot><tr><td colSpan="3" className="col-desc"><strong>Total</strong></td><td className="col-right"><strong>{formatCurrency(totalEarnings)}</strong></td></tr></tfoot>
-                </table>
-            </section>
+                {/* Tax Status Row */}
+                <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
+                    <table className="payslip-table-modern" style={{ fontSize: '0.85rem' }}>
+                        <tbody>
+                            <tr><td style={{ fontWeight: 'bold', border: '1px solid #000', padding: '4px 8px' }}>EMPLOYEE NAME</td><td style={{ border: '1px solid #000', padding: '4px 8px' }}>{employee.name}</td></tr>
+                            <tr><td style={{ fontWeight: 'bold', border: '1px solid #000', padding: '4px 8px' }}>EMPLOYEE ID</td><td style={{ border: '1px solid #000', padding: '4px 8px' }}>{employee.employeeId}</td></tr>
+                        </tbody>
+                    </table>
+                    <table className="payslip-table-modern" style={{ fontSize: '0.85rem' }}>
+                        <tbody>
+                            <tr><td style={{ fontWeight: 'bold', border: '1px solid #000', padding: '4px 8px' }}>FEDERAL ALLOWANCES</td><td style={{ border: '1px solid #000', padding: '4px 8px' }}>{employee.taxCode || 'M-03'}</td></tr>
+                            <tr><td style={{ fontWeight: 'bold', border: '1px solid #000', padding: '4px 8px' }}>STATE ALLOWANCES</td><td style={{ border: '1px solid #000', padding: '4px 8px' }}>{employee.taxCode || 'M-03'}</td></tr>
+                        </tbody>
+                    </table>
+                </section>
 
-            <section className="table-section">
-                <h3 className="section-title">Deductions</h3>
-                <table className="payslip-table-modern">
-                    <thead><tr><th className="col-desc">Description</th><th className="col-right">Total</th></tr></thead>
-                    <tbody>
-                        {deductions.map(item => (<tr key={item.id}><td>{item.description}</td><td className="col-right">{formatCurrency(item.amount)}</td></tr>))}
-                    </tbody>
-                    <tfoot><tr><td className="col-desc"><strong>Total</strong></td><td className="col-right"><strong>{formatCurrency(totalDeductions)}</strong></td></tr></tfoot>
-                </table>
-            </section>
+                {/* Main Content: Left=Earnings+Deductions, Right=Employer Contributions */}
+                <section style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '20px' }}>
+                    {/* LEFT SIDE */}
+                    <div>
+                        {/* Earnings */}
+                        <h3 style={{ fontSize: '0.8rem', fontWeight: 'bold', textTransform: 'uppercase', margin: '10px 0 5px' }}>EARNINGS - COMPENSATION</h3>
+                        <table className="payslip-table-modern" style={{ fontSize: '0.8rem' }}>
+                            <thead><tr><th>DESCRIPTION</th><th>END DATE</th><th>RATE</th><th className="col-right">AMOUNT</th><th className="col-right">YTD</th></tr></thead>
+                            <tbody>
+                                {earnings.map(item => (
+                                    <tr key={item.id}><td>{item.description}</td><td>{meta.payPeriodEnd}</td><td>{formatCurrency(item.rate)}</td><td className="col-right">{formatCurrency(item.amount)}</td><td className="col-right">{formatCurrency(item.ytd || item.amount * 12)}</td></tr>
+                                ))}
+                            </tbody>
+                        </table>
 
-            <section className="payslip-footer-section">
-                <div className="net-pay-row">
-                    <div className="net-pay-label">
-                        <strong>Net pay</strong>
-                        <div className="bank-details">
-                            <div className="bank-row"><span className="bank-label">Bank details:</span> <span>{bank?.bankName || 'CHASE BANK'}</span></div>
-                            <div className="bank-row"><span className="bank-label">Account number:</span> <span>{bank?.accountNumber || '892-5647391'}</span></div>
-                            <div className="bank-row"><span className="bank-label">Total net pay:</span> <span className="net-amount">{formatCurrency(netPay)}</span></div>
+                        {/* Pre-Tax Reductions */}
+                        {preTaxReductions && preTaxReductions.length > 0 && (
+                            <>
+                                <h3 style={{ fontSize: '0.8rem', fontWeight: 'bold', textTransform: 'uppercase', margin: '15px 0 5px' }}>PRE-TAX REDUCTIONS</h3>
+                                <table className="payslip-table-modern" style={{ fontSize: '0.8rem' }}>
+                                    <thead><tr><th>DESCRIPTION</th><th className="col-right">CURRENT</th><th className="col-right">YTD</th></tr></thead>
+                                    <tbody>
+                                        {preTaxReductions.map(item => (
+                                            <tr key={item.id}><td>{item.description}</td><td className="col-right">{formatCurrency(item.amount)}</td><td className="col-right">{formatCurrency(item.ytd)}</td></tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </>
+                        )}
+
+                        {/* Taxes */}
+                        {taxes && taxes.length > 0 && (
+                            <>
+                                <h3 style={{ fontSize: '0.8rem', fontWeight: 'bold', textTransform: 'uppercase', margin: '15px 0 5px' }}>EMPLOYEE DEDUCTIONS (TAXES)</h3>
+                                <table className="payslip-table-modern" style={{ fontSize: '0.8rem' }}>
+                                    <thead><tr><th>DESCRIPTION</th><th className="col-right">CURRENT</th><th className="col-right">YTD</th></tr></thead>
+                                    <tbody>
+                                        {taxes.map(item => (
+                                            <tr key={item.id}><td>{item.description}</td><td className="col-right">{formatCurrency(item.amount)}</td><td className="col-right">{formatCurrency(item.ytd)}</td></tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </>
+                        )}
+
+                        {/* Other Deductions */}
+                        {deductions && deductions.length > 0 && (
+                            <>
+                                <h3 style={{ fontSize: '0.8rem', fontWeight: 'bold', textTransform: 'uppercase', margin: '15px 0 5px' }}>OTHER DEDUCTIONS</h3>
+                                <table className="payslip-table-modern" style={{ fontSize: '0.8rem' }}>
+                                    <thead><tr><th>DESCRIPTION</th><th className="col-right">CURRENT</th><th className="col-right">YTD</th></tr></thead>
+                                    <tbody>
+                                        {deductions.map(item => (
+                                            <tr key={item.id}><td>{item.description}</td><td className="col-right">{formatCurrency(item.amount)}</td><td className="col-right">{formatCurrency(item.ytd)}</td></tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </>
+                        )}
+                    </div>
+
+                    {/* RIGHT SIDE */}
+                    <div>
+                        {/* Employer Contributions */}
+                        {employerContributions && employerContributions.length > 0 && (
+                            <>
+                                <h3 style={{ fontSize: '0.8rem', fontWeight: 'bold', textTransform: 'uppercase', margin: '10px 0 5px' }}>EMPLOYER CONTRIBUTIONS</h3>
+                                <table className="payslip-table-modern" style={{ fontSize: '0.8rem' }}>
+                                    <thead><tr><th>DESCRIPTION</th><th className="col-right">CURRENT</th><th className="col-right">YTD</th></tr></thead>
+                                    <tbody>
+                                        {employerContributions.map(item => (
+                                            <tr key={item.id}><td>{item.description}</td><td className="col-right">{formatCurrency(item.amount)}</td><td className="col-right">{formatCurrency(item.ytd)}</td></tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </>
+                        )}
+
+                        {/* Taxable Wages */}
+                        {taxableWages && (
+                            <>
+                                <h3 style={{ fontSize: '0.8rem', fontWeight: 'bold', textTransform: 'uppercase', margin: '15px 0 5px' }}>CURRENT TAXABLE BALANCES</h3>
+                                <table className="payslip-table-modern" style={{ fontSize: '0.8rem' }}>
+                                    <thead><tr><th>TYPE</th><th className="col-right">CURRENT</th><th className="col-right">YTD</th></tr></thead>
+                                    <tbody>
+                                        <tr><td>FEDERAL</td><td className="col-right">{formatCurrency(taxableWages.federal?.current)}</td><td className="col-right">{formatCurrency(taxableWages.federal?.ytd)}</td></tr>
+                                        <tr><td>STATE</td><td className="col-right">{formatCurrency(taxableWages.state?.current)}</td><td className="col-right">{formatCurrency(taxableWages.state?.ytd)}</td></tr>
+                                        <tr><td>MEDICARE GROSS</td><td className="col-right">{formatCurrency(taxableWages.medicare?.current)}</td><td className="col-right">{formatCurrency(taxableWages.medicare?.ytd)}</td></tr>
+                                    </tbody>
+                                </table>
+                            </>
+                        )}
+                    </div>
+                </section>
+
+                {/* Bottom Summary + Check Area */}
+                <section style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: '20px', marginTop: '20px' }}>
+                    {/* Summary Box */}
+                    <table className="payslip-table-modern" style={{ fontSize: '0.85rem' }}>
+                        <tbody>
+                            <tr><td style={{ fontWeight: 'bold', border: '1px solid #000', padding: '4px 8px' }}>GROSS PAY</td><td style={{ border: '1px solid #000', padding: '4px 8px', textAlign: 'right' }}>{formatCurrency(totalEarnings)}</td></tr>
+                            <tr><td style={{ fontWeight: 'bold', border: '1px solid #000', padding: '4px 8px' }}>REDUCTIONS</td><td style={{ border: '1px solid #000', padding: '4px 8px', textAlign: 'right' }}>{formatCurrency(totalPreTax)}</td></tr>
+                            <tr><td style={{ fontWeight: 'bold', border: '1px solid #000', padding: '4px 8px' }}>TAXES</td><td style={{ border: '1px solid #000', padding: '4px 8px', textAlign: 'right' }}>{formatCurrency(totalTaxes)}</td></tr>
+                            <tr><td style={{ fontWeight: 'bold', border: '1px solid #000', padding: '4px 8px' }}>DEDUCTIONS</td><td style={{ border: '1px solid #000', padding: '4px 8px', textAlign: 'right' }}>{formatCurrency(totalOtherDed)}</td></tr>
+                            <tr><td style={{ fontWeight: 'bold', border: '1px solid #000', padding: '4px 8px' }}>GROSS YTD</td><td style={{ border: '1px solid #000', padding: '4px 8px', textAlign: 'right' }}>{formatCurrency(earnings[0]?.ytd || totalEarnings * 12)}</td></tr>
+                            <tr style={{ background: '#f0f0f0' }}><td style={{ fontWeight: 'bold', border: '1px solid #000', padding: '4px 8px' }}>NET PAY</td><td style={{ border: '1px solid #000', padding: '4px 8px', textAlign: 'right', fontWeight: 'bold', fontSize: '1rem' }}>${(checkInfo?.netPay || netPay).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td></tr>
+                        </tbody>
+                    </table>
+
+                    {/* Check Area */}
+                    <div style={{ border: '1px solid #000', padding: '12px', fontSize: '0.85rem' }}>
+                        <div style={{ marginBottom: '8px' }}>
+                            <span style={{ fontWeight: 'bold' }}>{company.district || company.name}</span> – {company.name}<br />
+                            NO. {meta.adviceNumber || '1234567'}&nbsp;&nbsp;&nbsp;Date Issued: {meta.payDate}
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>THE TREASURER OF {(company.county || 'COUNTY').toUpperCase()} will pay exactly:</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                            <span>AMOUNT</span>
+                            <div style={{ border: '1px solid #000', padding: '5px 12px', fontWeight: 'bold', minWidth: '110px', textAlign: 'right' }}>
+                                ${(checkInfo?.netPay || netPay).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                            </div>
+                        </div>
+                        <div style={{ fontSize: '0.8rem', marginBottom: '10px' }}>{checkInfo?.netPayWords || 'Amount in words'}</div>
+                        <div style={{ fontSize: '0.75rem', color: '#666' }}>NOT VALID FOR MORE THAN ${(checkInfo?.maxValidAmount || 24999.99).toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+                        <div style={{ marginTop: '10px', fontSize: '0.8rem' }}>
+                            <strong>WILL PAY TO:</strong> {employee.name}<br />
+                            <strong>BANK:</strong> {bank?.bankName || 'Chase Bank'} ({bank?.accountNumber || '****9921'})<br />
+                            <strong>ACCRUAL DATE:</strong> {meta.accrualDate || meta.payDate}
                         </div>
                     </div>
+                </section>
+
+                {/* Footer - School Address */}
+                <div style={{ marginTop: '15px', paddingTop: '10px', borderTop: '1px dashed #000', fontSize: '0.8rem' }}>
+                    <strong>School Address:</strong> {company.name}, {company.address}
                 </div>
-            </section>
-        </>
-    );
+            </>
+        );
+    };
+
+    // Contractor Invoice
+    const renderInvoice = () => {
+        const invoiceNumber = `INV-${(employee.employeeId || '').replace(/\D/g, '').slice(-6).padStart(6, '0')}-${meta.payDate?.replace(/-/g, '') || '00000000'}`;
+        const totalAmount = totalEarnings;
+
+        return (
+            <>
+                {/* Header */}
+                <header className="payslip-header-centered" style={{ borderBottom: '2px solid #0f4c81', paddingBottom: '20px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                            {companyLogo && <img src={companyLogo} alt="Logo" className="company-logo" />}
+                            <div style={{ fontWeight: 'bold', fontSize: '1.4rem', color: '#0f4c81' }}>{company.name}</div>
+                            <div style={{ fontSize: '0.85rem', color: '#666' }}>{company.address}</div>
+                            <div style={{ fontSize: '0.85rem', color: '#666' }}>{company.phone} | {company.email}</div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                            <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#0f4c81' }}>{docTitle}</div>
+                            <div style={{ fontSize: '0.9rem', marginTop: '10px' }}>
+                                <strong>Invoice #:</strong> {invoiceNumber}
+                            </div>
+                            <div style={{ fontSize: '0.9rem' }}>
+                                <strong>Date:</strong> {meta.payDate}
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                {/* Bill To */}
+                <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', margin: '25px 0' }}>
+                    <div>
+                        <div style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', marginBottom: '8px' }}>Bill To</div>
+                        <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{employee.name}</div>
+                        <div style={{ fontSize: '0.9rem', color: '#555' }}>{employee.address}</div>
+                        <div style={{ fontSize: '0.9rem', color: '#555' }}>{employee.cityStateZip}</div>
+                    </div>
+                    <div>
+                        <div style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', marginBottom: '8px' }}>{personLabel} Details</div>
+                        <div style={{ fontSize: '0.9rem' }}><strong>ID:</strong> {employee.employeeId}</div>
+                        <div style={{ fontSize: '0.9rem' }}><strong>{statusLabel}:</strong> {statusValue}</div>
+                        <div style={{ fontSize: '0.9rem' }}><strong>Service Period:</strong> {meta.payPeriodStart} - {meta.payPeriodEnd}</div>
+                    </div>
+                </section>
+
+                {/* Services Table */}
+                <section style={{ marginBottom: '30px' }}>
+                    <table className="payslip-table-modern">
+                        <thead>
+                            <tr style={{ background: '#0f4c81', color: '#fff' }}>
+                                <th style={{ padding: '12px', textAlign: 'left' }}>Description</th>
+                                <th style={{ padding: '12px', textAlign: 'center' }}>Hours/Qty</th>
+                                <th style={{ padding: '12px', textAlign: 'right' }}>Rate</th>
+                                <th style={{ padding: '12px', textAlign: 'right' }}>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {earnings.map(item => (
+                                <tr key={item.id} style={{ borderBottom: '1px solid #eee' }}>
+                                    <td style={{ padding: '12px' }}>{item.description}</td>
+                                    <td style={{ padding: '12px', textAlign: 'center' }}>{item.quantity || 1}</td>
+                                    <td style={{ padding: '12px', textAlign: 'right' }}>{formatCurrency(item.rate)}</td>
+                                    <td style={{ padding: '12px', textAlign: 'right' }}>{formatCurrency(item.amount)}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </section>
+
+                {/* Summary */}
+                <section style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '40px' }}>
+                    <div style={{ width: '300px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #eee' }}>
+                            <span>Subtotal:</span>
+                            <span>{formatCurrency(totalAmount)}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #eee' }}>
+                            <span>Tax (0%):</span>
+                            <span>{formatCurrency(0)}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', fontSize: '1.2rem', fontWeight: 'bold', background: '#f5f5f5', marginTop: '8px' }}>
+                            <span style={{ paddingLeft: '10px' }}>Total Due:</span>
+                            <span style={{ paddingRight: '10px', color: '#0f4c81' }}>{formatCurrency(totalAmount)}</span>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Payment Info */}
+                <section style={{ background: '#f9f9f9', padding: '20px', borderRadius: '8px', marginBottom: '30px' }}>
+                    <div style={{ fontWeight: 'bold', marginBottom: '10px' }}>Payment Information</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', fontSize: '0.9rem' }}>
+                        <div><strong>Bank:</strong> {bank?.bankName || 'Chase Bank'}</div>
+                        <div><strong>Account:</strong> {bank?.accountNumber || '****9921'}</div>
+                        <div><strong>Routing:</strong> {bank?.routingNumber || '021000021'}</div>
+                        <div><strong>Due Date:</strong> Net 30</div>
+                    </div>
+                </section>
+
+                {/* Footer */}
+                <div style={{ textAlign: 'center', fontSize: '0.8rem', color: '#888', borderTop: '1px solid #eee', paddingTop: '20px' }}>
+                    <p>Thank you for your business!</p>
+                    <p>{company.name} • {company.address} • {company.phone}</p>
+                </div>
+            </>
+        );
+    };
 
     const renderTaxForm = () => (
         <>
@@ -374,19 +599,32 @@ const Preview = ({ state, docType = 'payslip', mode = 'employee', companyLogo, c
                     gap: '20px',
                     background: '#fafafa'
                 }}>
-                    <div style={{
-                        width: '120px',
-                        height: '150px',
-                        background: '#ddd',
-                        borderRadius: '8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '3rem',
-                        color: '#999'
-                    }}>
-                        👤
-                    </div>
+                    {photoBase64 ? (
+                        <img
+                            src={photoBase64}
+                            alt={employee.name}
+                            style={{
+                                width: '120px',
+                                height: '150px',
+                                borderRadius: '8px',
+                                objectFit: 'cover'
+                            }}
+                        />
+                    ) : (
+                        <div style={{
+                            width: '120px',
+                            height: '150px',
+                            background: '#ddd',
+                            borderRadius: '8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '3rem',
+                            color: '#999'
+                        }}>
+                            👤
+                        </div>
+                    )}
                     <div style={{ flex: 1 }}>
                         <h3 style={{ margin: '0 0 5px', color: '#0f4c81', fontSize: '1.2rem' }}>{employee.name}</h3>
                         <p style={{ margin: '0 0 10px', color: '#666', fontSize: '0.95rem' }}>{employee.position}</p>
@@ -763,7 +1001,7 @@ const Preview = ({ state, docType = 'payslip', mode = 'employee', companyLogo, c
                     transformOrigin: 'top center'
                 }}
             >
-                {docType === 'payslip' && renderPayslip()}
+                {docType === 'payslip' && (isContractor ? renderInvoice() : renderPayslip())}
                 {docType === 'tax' && renderTaxForm()}
                 {docType === 'w2' && renderW2()}
                 {docType === 'employment' && renderEmploymentLetter()}

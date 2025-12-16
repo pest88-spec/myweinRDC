@@ -7,7 +7,7 @@
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 **A professional, dynamic payslip & employment document generator built with React and Vite.**
-Create, customize, and print payslips, tax forms, and employment letters instantly.
+Create, customize, and print payslips, tax forms, teacher IDs, and employment letters instantly.
 
 [**🚀 Live Demo**](https://thanhnguyxn.github.io/payslip-generator/) | [**🎓 Student ID Generator**](https://thanhnguyxn.github.io/student-card-generator/)
 
@@ -20,32 +20,65 @@ Create, customize, and print payslips, tax forms, and employment letters instant
 
 ## ✨ Features
 
-### 📄 Multiple Document Types
-- **Payslip** - Standard employee pay statement
-- **Tax Form** - Tax withholding statement
-- **W-2 Form** - Wage and tax statement (US format)
-- **Employment Letter** - Employment verification letter
-- **Offer Letter** - Job offer letter with terms
+### 📄 Document Types (7 Types)
+
+| Document | Description |
+|----------|-------------|
+| **Payslip** | Salary Warrant with earnings, deductions, taxes, employer contributions |
+| **Invoice** | Contractor invoice for independent contractors |
+| **Tax Form** | Tax withholding statement |
+| **W-2 Form** | Wage and tax statement (US format) |
+| **Employment Letter** | Employment verification letter |
+| **Offer Letter** | Job offer letter with terms |
+| **Faculty Listing** | School website staff directory screenshot |
+| **Teacher ID** | Professional teacher ID card (3 styles) |
 
 ### 👥 Employee & Contractor Modes
-- **Employee Mode** - Full-time employee documents with payslip, benefits
-- **Contractor Mode** - Independent contractor invoices with service agreements
+
+| Mode | Output |
+|------|--------|
+| **Employee** | Salary Warrant payslip with full tax breakdowns |
+| **Contractor** | Professional invoice with services table |
+
+### 🎴 Teacher ID Card Styles
+
+| Style | Description |
+|-------|-------------|
+| **Original** | University-themed with gradient background |
+| **Modern** | Dark theme with purple accents |
+| **Simple** | Clean white background with minimal design |
+
+### 🏫 Supported Universities (13+)
+
+- MIT, Harvard, Stanford, Yale, UCLA
+- Duke, Cornell, Northwestern, Michigan
+- UT Austin, Washington, Ohio State, UPenn
+- Brown, Johns Hopkins, USC, Carnegie Mellon
 
 ### 🎨 Modern UI/UX
+
 - **Dark Sidebar** - Professional dark theme editor panel
 - **Gradient Preview** - Beautiful purple gradient preview area
 - **Zoom Controls** - 30%-150% zoom with smooth transitions
 - **Drag & Pan** - Freely drag documents in preview
-- **Company Logo** - Upload and display company logo on all documents
+- **Company Logo** - Upload and display company logo
+- **Teacher Photo** - Upload or AI-generate realistic photos
 - **Responsive Design** - Works on desktop, tablet, and mobile
 
 ### 💰 Dynamic Calculations
+
 - **Flexible Earnings & Deductions** - Add unlimited rows
 - **Automatic Totals** - Net pay calculated in real-time
-- **Tax Calculations** - Federal, state, Social Security, Medicare
+- **Tax Calculations** - Federal, State, Social Security, Medicare
+- **YTD Tracking** - Year-to-date cumulative totals
+- **Pre-tax Reductions** - STRS, Medical Premium, Insurance
+- **Employer Contributions** - Full employer cost breakdown
 
 ### 🖨️ Export Options
+
 - **Print/PDF** - Built-in print dialog for saving as PDF
+- **PNG Export** - High-quality image export
+- **ZIP Download** - Multiple documents in one archive
 - **Professional Layout** - Clean, A4-sized documents
 
 ## 🛠️ Tech Stack
@@ -54,24 +87,46 @@ Create, customize, and print payslips, tax forms, and employment letters instant
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 
-## 📖 Usage Guide
+| Technology | Purpose |
+|------------|---------|
+| **React 18** | UI Components |
+| **Vite 7** | Build tool & dev server |
+| **html2canvas** | DOM to image conversion |
+| **jsPDF** | PDF generation |
+| **JSZip** | ZIP file creation |
 
-### Quick Start
-1. **Select Mode** - Choose Employee or Contractor in the nav bar
-2. **Select Document Type** - Click Payslip, Tax Form, W-2, Employment, or Offer Letter
-3. **Fill Details** - Use the sidebar to enter company, employee, and pay info
-4. **Upload Logo** - Add your company logo (optional)
-5. **Random Data** - Click 🎲 for sample data
-6. **Download** - Click 📥 Download PDF to save
+## 📁 Project Structure
 
-### Navigation
-- **Document Tabs** - Switch between 5 document types
-- **Mode Toggle** - Employee documents vs Contractor invoices
-- **Student ID Link** - Quick access to Student ID Generator app
+```
+payslip-generator/
+├── src/
+│   ├── components/
+│   │   ├── Preview.jsx      # Document rendering (7 types)
+│   │   ├── Editor.jsx       # Sidebar input form
+│   │   └── DynamicTable.jsx # Earnings/deductions tables
+│   ├── constants/
+│   │   └── initialState.js  # Default form data
+│   ├── data/
+│   │   └── universities.js  # 13+ universities with logos
+│   ├── utils/
+│   │   ├── calculations.js  # Net pay, tax calculations
+│   │   ├── pdfExport.js     # PDF/PNG/ZIP export functions
+│   │   └── randomData.js    # Random data generator
+│   ├── App.jsx              # Main application
+│   └── index.css            # Styles & print media
+├── index.html
+└── package.json
+```
 
-## 💻 Development
+## 🚀 Quick Start
+
+### Local Development
 
 ```bash
+# Clone the repository
+git clone https://github.com/ThanhNguyxn/payslip-generator.git
+cd payslip-generator
+
 # Install dependencies
 npm install
 
@@ -81,6 +136,41 @@ npm run dev
 # Build for production
 npm run build
 ```
+
+### Deploy to GitHub Pages
+
+```bash
+npm run deploy
+```
+
+## 📖 Usage Guide
+
+### Quick Start
+1. **Select Mode** - Employee or Contractor toggle in nav bar
+2. **Select Document** - Click tabs: Payslip, Tax, W-2, Employment, Offer, Faculty, Teacher ID
+3. **Fill Details** - Use sidebar to enter company, employee, pay info
+4. **Upload Logo** - Add company logo (optional)
+5. **Upload Photo** - Add teacher photo (for Teacher ID)
+6. **Random Data** - Click 🎲 to generate sample data
+7. **Download** - Click 📥 to export as PDF/PNG
+
+### Document-Specific Tips
+
+| Document | Tips |
+|----------|------|
+| **Payslip** | Customize earnings, taxes, deductions, employer contributions |
+| **Invoice** | Switch to Contractor mode first |
+| **Teacher ID** | Select card style (Original/Modern/Simple) |
+| **Faculty Listing** | Shows as browser screenshot of school website |
+
+## 🐛 Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Logo not showing | Use PNG/JPG format, max 2MB |
+| Photo not in export | Wait for photo to fully load |
+| PDF cut off | Use landscape mode for wide cards |
+| Zoom not working | Try refreshing the page |
 
 ## 🤝 Support
 
@@ -93,3 +183,13 @@ If you find this project useful, please consider:
 ## 📝 License
 
 MIT License - feel free to use for educational purposes.
+
+---
+
+<div align="center">
+
+**Made with ❤️ by [@ThanhNguyxn](https://github.com/ThanhNguyxn)**
+
+If you find this project useful, please give it a ⭐ on [GitHub](https://github.com/ThanhNguyxn/payslip-generator)!
+
+</div>
