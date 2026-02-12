@@ -20,10 +20,10 @@ const DynamicTable = ({ title, items, onUpdate, onAdd, onRemove, columns }) => {
                             className={`input-${col.key}`}
                         />
                     ))}
-                    <button onClick={() => onRemove(item.id)} className="btn-remove">×</button>
+                    <button onClick={() => onRemove(item.id)} className="btn-remove" aria-label="Remove item">×</button>
                 </div>
             ))}
-            <button onClick={onAdd} className="btn-add">+ Add {title}</button>
+            <button onClick={onAdd} className="btn-add" aria-label="Add new item">+ Add {title}</button>
         </div>
     );
 };

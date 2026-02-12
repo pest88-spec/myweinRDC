@@ -56,7 +56,7 @@ export async function exportPayslipToPdf(state) {
             useCORS: true,
             allowTaint: true,
             backgroundColor: '#ffffff',
-            scale: 2, // High quality
+            scale: 2,
         });
 
         // Create PDF - A4 portrait
@@ -73,13 +73,16 @@ export async function exportPayslipToPdf(state) {
         // Center vertically if image is shorter than page
         const yPos = imgHeight < pageHeight ? (pageHeight - imgHeight) / 2 : margin;
 
+        // Use JPEG with 0.82 quality for much smaller file size vs PNG
         pdf.addImage(
-            canvas.toDataURL('image/png'),
-            'PNG',
+            canvas.toDataURL('image/jpeg', 0.82),
+            'JPEG',
             margin,
             yPos,
             imgWidth,
-            imgHeight
+            imgHeight,
+            undefined,
+            'FAST'
         );
 
         // Save with descriptive filename
@@ -123,12 +126,14 @@ async function createTeacherCardPdf() {
     const yPos = (pageHeight - imgHeight) / 2;
 
     pdf.addImage(
-        frontCanvas.toDataURL('image/png'),
-        'PNG',
+        frontCanvas.toDataURL('image/jpeg', 0.82),
+        'JPEG',
         margin,
         yPos,
         imgWidth,
-        imgHeight
+        imgHeight,
+        undefined,
+        'FAST'
     );
 
     // Add back card on second page if it exists
@@ -145,12 +150,14 @@ async function createTeacherCardPdf() {
         const backYPos = (pageHeight - backImgHeight) / 2;
 
         pdf.addImage(
-            backCanvas.toDataURL('image/png'),
-            'PNG',
+            backCanvas.toDataURL('image/jpeg', 0.82),
+            'JPEG',
             margin,
             backYPos,
             imgWidth,
-            backImgHeight
+            backImgHeight,
+            undefined,
+            'FAST'
         );
     }
 
@@ -222,47 +229,72 @@ export async function exportToPng(state, docType = 'payslip') {
 }
 
 /**
- * Export all documents to ZIP
+ * Export all document types to a ZIP archive.
+ * Includes all standard document types (excludes teacherCard which has its own PDF export).
+ * Uses requestAnimationFrame for reliable render waiting instead of fixed timeouts.
+ *
  * @param {object} state - Application state
- * @param {function} setDocType - Function to switch document type
- * @param {Array} docTypes - Array of document types to export
+ * @param {function} setDocType - Function to switch document type for rendering
+ * @param {string} [currentDocType='payslip'] - The document type to restore after export completes
+ * @param {function} [onProgress] - Optional progress callback: ({ current, total, docType }) => void
  */
-export async function exportToZip(state, setDocType, docTypes = ['payslip', 'tax', 'w2', 'employment', 'offer']) {
+export async function exportToZip(state, setDocType, currentDocType = 'payslip', onProgress) {
+    const allDocTypes = ['payslip', 'tax', 'w2', 'employment', 'offer', 'faculty', 'educatorLicense'];
     const zip = new JSZip();
     const employeeName = sanitizeFilename(state.employee?.name || 'Employee');
     const payPeriod = formatPayPeriod(state.meta?.payDate);
+    const failedDocs = [];
 
     const docLabels = {
         payslip: 'Payslip',
         tax: 'Tax_Form',
         w2: 'W2_Form',
         employment: 'Employment_Letter',
-        offer: 'Offer_Letter'
+        offer: 'Offer_Letter',
+        faculty: 'Faculty_Listing',
+        educatorLicense: 'Educator_License'
     };
 
     try {
-        for (const docType of docTypes) {
+        for (let i = 0; i < allDocTypes.length; i++) {
+            const docType = allDocTypes[i];
+
+            // Report progress to caller
+            onProgress?.({ current: i + 1, total: allDocTypes.length, docType });
+
             // Switch to this document type
             setDocType(docType);
 
-            // Wait for render
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            const element = document.querySelector('.payslip-container');
-            if (!element) continue;
-
-            const canvas = await html2canvas(element, {
-                useCORS: true,
-                allowTaint: true,
-                backgroundColor: '#ffffff',
-                scale: 2,
+            // Wait for React render cycle using double requestAnimationFrame
+            await new Promise(resolve => {
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => resolve());
+                });
             });
 
-            // Convert to blob and add to ZIP
-            const dataUrl = canvas.toDataURL('image/png');
-            const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '');
-            const filename = `${docLabels[docType]}_${employeeName}_${payPeriod}.png`;
-            zip.file(filename, base64Data, { base64: true });
+            try {
+                const element = document.querySelector('.payslip-container');
+                if (!element) {
+                    failedDocs.push(docType);
+                    continue;
+                }
+
+                const canvas = await html2canvas(element, {
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    scale: 2,
+                });
+
+                // Convert to base64 and add to ZIP
+                const dataUrl = canvas.toDataURL('image/png');
+                const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '');
+                const filename = `${docLabels[docType] || docType}_${employeeName}_${payPeriod}.png`;
+                zip.file(filename, base64Data, { base64: true });
+            } catch (docError) {
+                console.error(`Failed to export ${docType}:`, docError);
+                failedDocs.push(docType);
+            }
         }
 
         // Generate and download ZIP
@@ -273,11 +305,16 @@ export async function exportToZip(state, setDocType, docTypes = ['payslip', 'tax
         link.click();
         URL.revokeObjectURL(link.href);
 
-        // Switch back to payslip
-        setDocType('payslip');
-
     } catch (error) {
         console.error('ZIP export failed:', error);
         alert('Failed to export ZIP. Please try again.');
+    } finally {
+        // Always restore original document type, even if export fails
+        setDocType(currentDocType);
+    }
+
+    // Report any documents that failed to export
+    if (failedDocs.length > 0) {
+        alert(`Export completed. Failed documents: ${failedDocs.join(', ')}`);
     }
 }

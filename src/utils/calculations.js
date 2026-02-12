@@ -10,6 +10,13 @@ export const calculateNetPay = (earnings, deductions) => {
     return calculateTotalEarnings(earnings) - calculateTotalDeductions(deductions);
 };
 
+// Format a numeric amount as USD currency string.
+// Non-numeric inputs (undefined, null, NaN, non-numeric strings) are treated as 0.
 export const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD' }).format(amount);
+    const numericAmount = Number(amount);
+    if (isNaN(numericAmount)) {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(0);
+    }
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(numericAmount);
 };
+

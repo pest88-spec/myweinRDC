@@ -4,6 +4,15 @@
 export const UNIVERSITIES = [
     // ===== USA =====
     {
+        name: "Saint Ignatius College Prep",
+        shortName: "Saint Ignatius",
+        domain: "ignatius.org",
+        logo: "https://thanhnguyxn.github.io/student-card-generator/img/logos/default.png",
+        color: "#8B0000",
+        address: "1076 W. Roosevelt Road, Chicago, IL 60608",
+        departments: ["Mathematics", "English", "Science", "Social Studies", "Fine Arts", "Theology", "World Languages"]
+    },
+    {
         name: "Pennsylvania State University-Main Campus",
         shortName: "Penn State",
         domain: "psu.edu",

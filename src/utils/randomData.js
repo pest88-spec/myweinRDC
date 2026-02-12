@@ -6,7 +6,30 @@ const K12_SCHOOLS = [
     { name: "Chicago Public Schools", district: "CPS", county: "Cook County, Illinois", address: "42 W Madison St, Chicago, IL 60602", phone: "(773) 553-1000", website: "www.cps.edu" },
     { name: "New York City Dept of Education", district: "NYCDOE", county: "New York, New York", address: "52 Chambers St, New York, NY 10007", phone: "(718) 935-2000", website: "www.schools.nyc.gov" },
     { name: "Clark County School District", district: "CCSD", county: "Clark County, Nevada", address: "5100 W Sahara Ave, Las Vegas, NV 89146", phone: "(702) 799-5000", website: "www.ccsd.net" },
-    { name: "Fairfax County Public Schools", district: "FCPS", county: "Fairfax County, Virginia", address: "8115 Gatehouse Rd, Falls Church, VA 22042", phone: "(571) 423-1000", website: "www.fcps.edu" }
+    { name: "Fairfax County Public Schools", district: "FCPS", county: "Fairfax County, Virginia", address: "8115 Gatehouse Rd, Falls Church, VA 22042", phone: "(571) 423-1000", website: "www.fcps.edu" },
+    { name: "Houston Independent School District", district: "HISD", county: "Harris County, Texas", address: "4400 W 18th St, Houston, TX 77092", phone: "(713) 556-6000", website: "www.houstonisd.org" },
+    { name: "Miami-Dade County Public Schools", district: "M-DCPS", county: "Miami-Dade County, Florida", address: "1450 NE 2nd Ave, Miami, FL 33132", phone: "(305) 995-1000", website: "www.dadeschools.net" },
+    { name: "Hillsborough County Public Schools", district: "HCPS", county: "Hillsborough County, Florida", address: "901 E Kennedy Blvd, Tampa, FL 33602", phone: "(813) 272-4000", website: "www.hillsboroughschools.org" },
+    { name: "Orange County Public Schools", district: "OCPS", county: "Orange County, Florida", address: "445 W Amelia St, Orlando, FL 32801", phone: "(407) 317-3200", website: "www.ocps.net" },
+    { name: "Broward County Public Schools", district: "BCPS", county: "Broward County, Florida", address: "600 SE 3rd Ave, Fort Lauderdale, FL 33301", phone: "(754) 321-0000", website: "www.browardschools.com" },
+    { name: "Gwinnett County Public Schools", district: "GCPS", county: "Gwinnett County, Georgia", address: "437 Old Peachtree Rd NW, Suwanee, GA 30024", phone: "(678) 301-6000", website: "www.gcpsk12.org" },
+    { name: "Charlotte-Mecklenburg Schools", district: "CMS", county: "Mecklenburg County, North Carolina", address: "4421 Stuart Andrew Blvd, Charlotte, NC 28217", phone: "(980) 343-3000", website: "www.cms.k12.nc.us" },
+    { name: "School District of Philadelphia", district: "SDP", county: "Philadelphia County, Pennsylvania", address: "440 N Broad St, Philadelphia, PA 19130", phone: "(215) 400-4000", website: "www.philasd.org" },
+    { name: "San Diego Unified School District", district: "SDUSD", county: "San Diego County, California", address: "4100 Normal St, San Diego, CA 92103", phone: "(619) 725-8000", website: "www.sandiegounified.org" },
+    { name: "Denver Public Schools", district: "DPS", county: "Denver County, Colorado", address: "1860 Lincoln St, Denver, CO 80203", phone: "(720) 423-3200", website: "www.dpsk12.org" },
+    { name: "Austin Independent School District", district: "AISD", county: "Travis County, Texas", address: "4000 S IH 35, Austin, TX 78704", phone: "(512) 414-1700", website: "www.austinisd.org" },
+    { name: "Boston Public Schools", district: "BPS", county: "Suffolk County, Massachusetts", address: "2300 Washington St, Boston, MA 02119", phone: "(617) 635-9000", website: "www.bostonpublicschools.org" },
+    { name: "Seattle Public Schools", district: "SPS", county: "King County, Washington", address: "2445 3rd Ave S, Seattle, WA 98134", phone: "(206) 252-0000", website: "www.seattleschools.org" },
+    { name: "Portland Public Schools", district: "PPS", county: "Multnomah County, Oregon", address: "501 N Dixon St, Portland, OR 97227", phone: "(503) 916-2000", website: "www.pps.net" },
+    { name: "Minneapolis Public Schools", district: "MPS", county: "Hennepin County, Minnesota", address: "1250 W Broadway Ave, Minneapolis, MN 55411", phone: "(612) 668-0000", website: "www.mpls.k12.mn.us" },
+    { name: "Detroit Public Schools", district: "DPSCD", county: "Wayne County, Michigan", address: "3011 W Grand Blvd, Detroit, MI 48202", phone: "(313) 873-7490", website: "www.detroitk12.org" },
+    { name: "Atlanta Public Schools", district: "APS", county: "Fulton County, Georgia", address: "130 Trinity Ave SW, Atlanta, GA 30303", phone: "(404) 802-3500", website: "www.atlantapublicschools.us" },
+    { name: "San Francisco Unified School District", district: "SFUSD", county: "San Francisco County, California", address: "555 Franklin St, San Francisco, CA 94102", phone: "(415) 241-6000", website: "www.sfusd.edu" },
+    { name: "Baltimore City Public Schools", district: "City Schools", county: "Baltimore City, Maryland", address: "200 E North Ave, Baltimore, MD 21202", phone: "(443) 984-2000", website: "www.baltimorecityschools.org" },
+    { name: "Saint Ignatius College Prep", district: "Archdiocese of Chicago", county: "Cook County, Illinois", address: "1076 W Roosevelt Rd, Chicago, IL 60608", phone: "(312) 421-5900", website: "www.ignatius.org" },
+    { name: "Phillips Academy Andover", district: "Independent", county: "Essex County, Massachusetts", address: "180 Main St, Andover, MA 01810", phone: "(978) 749-4000", website: "www.andover.edu" },
+    { name: "Thomas Jefferson High School for Science and Technology", district: "FCPS", county: "Fairfax County, Virginia", address: "6560 Braddock Rd, Alexandria, VA 22312", phone: "(703) 750-8300", website: "www.tjhsst.fcps.edu" },
+    { name: "Stuyvesant High School", district: "NYCDOE", county: "New York, New York", address: "345 Chambers St, New York, NY 10282", phone: "(212) 312-4800", website: "www.stuy.edu" },
 ];
 
 // Salary ranges by position (annual salary in USD for K-12 teachers)
@@ -25,6 +48,99 @@ const DEPARTMENTS = [
     "Mathematics", "English", "Science", "History", "Physical Education",
     "Art", "Music", "Foreign Languages", "Computer Science", "Social Studies"
 ];
+
+// Educator License data pools
+const LICENSE_STATES = [
+    { name: 'Ohio', abbreviation: 'OH', department: 'Department of Education' },
+    { name: 'California', abbreviation: 'CA', department: 'Commission on Teacher Credentialing' },
+    { name: 'Texas', abbreviation: 'TX', department: 'State Board for Educator Certification' },
+    { name: 'New York', abbreviation: 'NY', department: 'Department of Education' },
+    { name: 'Florida', abbreviation: 'FL', department: 'Department of Education' },
+    { name: 'Illinois', abbreviation: 'IL', department: 'State Board of Education' },
+    { name: 'Pennsylvania', abbreviation: 'PA', department: 'Department of Education' },
+    { name: 'Georgia', abbreviation: 'GA', department: 'Professional Standards Commission' },
+    { name: 'Michigan', abbreviation: 'MI', department: 'Department of Education' },
+    { name: 'Virginia', abbreviation: 'VA', department: 'Department of Education' }
+];
+
+const LICENSE_TYPES = [
+    '4 Year Resident Educator License',
+    '5 Year Professional License',
+    'Provisional License',
+    'Permanent Certificate',
+    'Initial Teaching License',
+    'Standard Teaching Certificate',
+    'Advanced Professional Certificate'
+];
+
+const TEACHING_AREAS = [
+    'Intervention Specialist (K-12)',
+    'Mathematics (7-12)',
+    'English Language Arts (4-9)',
+    'Science (7-12)',
+    'Social Studies (7-12)',
+    'Early Childhood Education (PK-3)',
+    'Middle Childhood Education (4-9)',
+    'Adolescence to Young Adult (7-12)',
+    'Physical Education (PK-12)',
+    'Music Education (PK-12)',
+    'Special Education (K-12)',
+    'Reading/Literacy (K-12)',
+    'World Languages - Spanish (PK-12)',
+    'Computer Science (PK-12)',
+    'Health Education (PK-12)'
+];
+
+const ENDORSEMENTS = [
+    'Mild/Moderate',
+    'Moderate/Intensive',
+    'Gifted Education',
+    'Reading Endorsement',
+    'TESOL',
+    'Early Childhood Generalist',
+    'Adaptive Physical Education',
+    'Bilingual Education',
+    'Autism Spectrum',
+    'Transition to Work'
+];
+
+const SIGNATORY_TITLES = [
+    'Chairman of the Board',
+    'Secretary',
+    'State Superintendent of Education',
+    'Superintendent of Public Instruction',
+    'Deputy Superintendent',
+    'Commissioner of Education'
+];
+
+const RENEWAL_REQUIREMENTS = [
+    '-State law requires that you register this certificate within 6 months of the issue date in the region in which you work or reside, whether or not you are employed. Failure to do so will result in a lapsed certificate.\n-This certificate may be registered in four year periods and is valid until June 30 of the year in which four years of teaching have been completed.',
+    '-This certificate must be renewed every 5 years. Completion of 120 clock hours of professional development is required.\n-Contact your regional office of education for renewal procedures.',
+    '-Holder must complete 8 semester hours of coursework in content area within the validity period.\n-Certificate is valid for 4 years from the date of issuance.',
+    '-Professional development requirements: 6 semester hours or equivalent.\n-Must maintain active employment in an approved educational institution.',
+    '-Renewal requires completion of a state-approved mentoring program.\n-Submit evidence of 2 years of successful teaching experience.'
+];
+
+const GRADE_LEVELS = [
+    'Middle School',
+    'High School',
+    'Elementary School',
+    'Grade level of Certificate',
+    'K-12',
+    'Early Childhood',
+    'Secondary'
+];
+
+const VALID_FOR_OPTIONS = [
+    'Kindergarten to Grade 9',
+    'Kindergarten to Grade 12',
+    'Grade 6 to Grade 12',
+    'Grade 9 to Grade 12',
+    'Pre-K to Grade 3',
+    'Pre-K to Grade 6',
+    'All Grade Levels (K-12)'
+];
+
 
 // Convert number to words for check amount
 function numberToWords(num) {
@@ -67,6 +183,100 @@ function numberToWords(num) {
     }
 
     return words.trim() + ' and ' + cents.toString().padStart(2, '0') + '/100 Dollars';
+}
+
+/**
+ * Generate a random educator license data object with realistic values.
+ * Uses data pools for states, license types, teaching areas, endorsements, etc.
+ * @param {string[]} firstNames - Pool of first names
+ * @param {string[]} lastNames - Pool of last names
+ * @param {function} random - Helper to pick a random element from an array
+ * @param {function} randomInt - Helper to generate a random integer in [min, max]
+ * @returns {Object} A complete educatorLicense object matching the state structure
+ */
+function generateEducatorLicense(firstNames, lastNames, random, randomInt) {
+    const selectedState = random(LICENSE_STATES);
+
+    // Generate licensee name in "Last, First M." format
+    const firstName = random(firstNames);
+    const lastName = random(lastNames);
+    const middleInitial = String.fromCharCode(randomInt(65, 90));
+    const licenseeName = `${lastName}, ${firstName} ${middleInitial}.`;
+
+    // Generate issued-to ID: 6-digit number
+    const issuedToId = String(randomInt(100000, 999999));
+
+    // Generate license number: 7 digits
+    const licenseNumber = String(randomInt(1000000, 9999999));
+
+    // Generate realistic date range
+    const issueYear = randomInt(2010, 2023);
+    const issueMonth = randomInt(1, 12);
+    const issueDay = randomInt(1, 28);
+    const issueDate = `${issueYear}-${String(issueMonth).padStart(2, '0')}-${String(issueDay).padStart(2, '0')}`;
+
+    // Valid For field
+    const validFor = random(VALID_FOR_OPTIONS);
+
+    // Generate 1-2 random teaching areas, each with 1-4 structured endorsements
+    const numAreas = randomInt(1, 2);
+    const usedAreaIndices = new Set();
+    const teachingAreas = [];
+    for (let i = 0; i < numAreas; i++) {
+        let areaIndex;
+        do {
+            areaIndex = randomInt(0, TEACHING_AREAS.length - 1);
+        } while (usedAreaIndices.has(areaIndex));
+        usedAreaIndices.add(areaIndex);
+
+        // Generate 1-4 structured endorsements for this area
+        const numEndorsements = randomInt(1, 4);
+        const usedEndorsementIndices = new Set();
+        const endorsements = [];
+        for (let j = 0; j < numEndorsements; j++) {
+            let endorsementIndex;
+            do {
+                endorsementIndex = randomInt(0, ENDORSEMENTS.length - 1);
+            } while (usedEndorsementIndices.has(endorsementIndex));
+            usedEndorsementIndices.add(endorsementIndex);
+            endorsements.push({
+                subject: ENDORSEMENTS[endorsementIndex],
+                gradeLevel: random(GRADE_LEVELS),
+                date: issueDate,
+            });
+        }
+
+        teachingAreas.push({
+            id: i + 1,
+            area: TEACHING_AREAS[areaIndex],
+            endorsements
+        });
+    }
+
+    // Generate certificate number: 7-digit number for top-right display
+    const certificateNumber = String(randomInt(1000000, 9999999));
+
+    // Generate 3 signatories with random names and appropriate titles
+    const signatoryTitles = ['Chairman of the Board', 'Secretary', 'State Superintendent of Education'];
+    const signatories = signatoryTitles.map((title) => ({
+        name: `${random(firstNames)} ${random(lastNames)}`,
+        title
+    }));
+
+    return {
+        stateName: selectedState.name,
+        departmentName: selectedState.department,
+        licenseType: random(LICENSE_TYPES),
+        licenseeName,
+        issuedToId,
+        licenseNumber,
+        issueDate,
+        validFor,
+        teachingAreas,
+        renewalRequirements: random(RENEWAL_REQUIREMENTS),
+        certificateNumber,
+        signatories
+    };
 }
 
 export const generateRandomData = () => {
@@ -173,7 +383,15 @@ export const generateRandomData = () => {
             taxCode: `M-0${randomInt(1, 4)}`,
             payRate: monthlySalary,
             department: `${selectedDept} Department`,
-            hireDate: `${2015 + randomInt(0, 8)}-08-${randomInt(10, 28).toString().padStart(2, '0')}`
+            hireDate: `${2015 + randomInt(0, 8)}-08-${randomInt(10, 28).toString().padStart(2, '0')}`,
+            employmentStatus: random(['Full-time Employee', 'Part-time Employee', 'Contract Employee']),
+            telecommute: random(['No', 'Yes', 'Hybrid']),
+            federalTaxStatus: random(['Married', 'Single', 'Head of Household']),
+            lastFourSSN: `${randomInt(1000, 9999)}`,
+            gradeLevel: random(['Grade K-5', 'Grade 6-8', 'Grade 9-12', 'Grade K-8', 'Grade 6-12']),
+            subjects: random([selectedDept, 'General Education', `${selectedDept} & Special Education`, `Advanced ${selectedDept}`]),
+            signatoryName: `${random(firstNames)} ${random(lastNames)}`,
+            signatoryTitle: random(['Principal', 'HR Director', 'Vice Principal', 'Dean of Faculty', 'Superintendent'])
         },
         meta: {
             payDate: formatDate(payDate),
@@ -219,6 +437,7 @@ export const generateRandomData = () => {
             netPay: netPay,
             netPayWords: numberToWords(netPay),
             maxValidAmount: 24999.99
-        }
+        },
+        educatorLicense: generateEducatorLicense(firstNames, lastNames, random, randomInt)
     };
 };

@@ -2,17 +2,19 @@ import { useState, useRef, useEffect } from 'react'
 import { INITIAL_STATE } from './constants/initialState'
 import { generateRandomData } from './utils/randomData'
 import { exportPayslipToPdf, exportToPng, exportToZip, exportTeacherCardToPdf, getTeacherCardPdfBase64 } from './utils/pdfExport'
+import usePersistentState from './hooks/usePersistentState'
 import Editor from './components/Editor'
 import Preview from './components/Preview'
 import './index.css'
 
 function App() {
-  const [state, setState] = useState(INITIAL_STATE)
-  const [docType, setDocType] = useState('payslip') // 'payslip', 'tax', 'employment'
+  const [state, setState, resetState] = usePersistentState(INITIAL_STATE)
+  const [docType, setDocType] = useState('payslip') // 'payslip', 'tax', 'w2', 'employment', 'offer', 'faculty', 'teacherCard', 'educatorLicense'
   const [mode, setMode] = useState('employee') // 'employee' or 'contractor'
   const [cardStyle, setCardStyle] = useState('original') // 'original', 'modern', 'simple'
   const [companyLogo, setCompanyLogo] = useState(null)
   const [photoBase64, setPhotoBase64] = useState(null)
+  const [exportProgress, setExportProgress] = useState(null) // { current, total, docType } or null
   const logoInputRef = useRef(null)
 
   // Cloudflare Worker URL for photo proxying
@@ -120,44 +122,58 @@ function App() {
           <button
             className={`tab-btn ${docType === 'payslip' ? 'active' : ''}`}
             onClick={() => setDocType('payslip')}
+            aria-current={docType === 'payslip' ? 'page' : undefined}
           >
             Payslip
           </button>
           <button
             className={`tab-btn ${docType === 'tax' ? 'active' : ''}`}
             onClick={() => setDocType('tax')}
+            aria-current={docType === 'tax' ? 'page' : undefined}
           >
             Tax Form
           </button>
           <button
             className={`tab-btn ${docType === 'w2' ? 'active' : ''}`}
             onClick={() => setDocType('w2')}
+            aria-current={docType === 'w2' ? 'page' : undefined}
           >
             W-2
           </button>
           <button
             className={`tab-btn ${docType === 'employment' ? 'active' : ''}`}
             onClick={() => setDocType('employment')}
+            aria-current={docType === 'employment' ? 'page' : undefined}
           >
             Employment
           </button>
           <button
             className={`tab-btn ${docType === 'offer' ? 'active' : ''}`}
             onClick={() => setDocType('offer')}
+            aria-current={docType === 'offer' ? 'page' : undefined}
           >
             Offer Letter
           </button>
           <button
             className={`tab-btn ${docType === 'faculty' ? 'active' : ''}`}
             onClick={() => setDocType('faculty')}
+            aria-current={docType === 'faculty' ? 'page' : undefined}
           >
             Faculty Listing
           </button>
           <button
             className={`tab-btn ${docType === 'teacherCard' ? 'active' : ''}`}
             onClick={() => setDocType('teacherCard')}
+            aria-current={docType === 'teacherCard' ? 'page' : undefined}
           >
             Teacher ID
+          </button>
+          <button
+            className={`tab-btn ${docType === 'educatorLicense' ? 'active' : ''}`}
+            onClick={() => setDocType('educatorLicense')}
+            aria-current={docType === 'educatorLicense' ? 'page' : undefined}
+          >
+            Educator License
           </button>
 
           {/* Style Selector */}
@@ -185,6 +201,15 @@ function App() {
 
         <div className="nav-right">
           <button
+            className="action-btn"
+            onClick={() => {
+              if (confirm('Reset all data to defaults?')) resetState();
+            }}
+            title="Reset all data to default values"
+          >
+            🔄 Reset
+          </button>
+          <button
             className="action-btn primary"
             onClick={() => {
               setState(generateRandomData());
@@ -209,12 +234,35 @@ function App() {
           </button>
           <button
             className="action-btn secondary"
-            onClick={() => exportToZip(state, setDocType)}
+            onClick={async () => {
+              setExportProgress({ current: 0, total: 6, docType: 'starting' });
+              await exportToZip(state, setDocType, docType, setExportProgress);
+              setExportProgress(null);
+            }}
+            disabled={!!exportProgress}
             title="Download ALL documents as ZIP"
-            style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
+            style={{
+              background: exportProgress
+                ? 'linear-gradient(135deg, #6b7280, #4b5563)'
+                : 'linear-gradient(135deg, #10b981, #059669)',
+              opacity: exportProgress ? 0.7 : 1,
+              cursor: exportProgress ? 'not-allowed' : 'pointer',
+            }}
           >
-            📦 ZIP All
+            {exportProgress ? '⏳ Exporting...' : '📦 ZIP All'}
           </button>
+          {exportProgress && (
+            <span style={{
+              color: 'white',
+              fontSize: '0.8rem',
+              display: 'flex',
+              alignItems: 'center',
+              marginLeft: '0.25rem',
+              whiteSpace: 'nowrap',
+            }}>
+              {exportProgress.current}/{exportProgress.total}
+            </span>
+          )}
           <a
             href="https://thanhnguyxn.github.io/student-card-generator/"
             target="_blank"
@@ -237,6 +285,10 @@ function App() {
           companyLogo={companyLogo}
           onLogoUpload={handleLogoUpload}
           logoInputRef={logoInputRef}
+          docType={docType}
+          photoBase64={photoBase64}
+          onPhotoChange={setPhotoBase64}
+          onFetchRandom={() => fetchPhoto(Math.random() > 0.5 ? 'male' : 'female')}
         />
         <Preview
           state={state}

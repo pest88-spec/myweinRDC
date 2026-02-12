@@ -220,6 +220,25 @@ body {
   color: rgba(255, 255, 255, 0.3);
 }
 
+/* Validation error styles for form inputs */
+.input-group input.input-error {
+  border: 2px solid #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.input-group input.input-error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.error-text {
+  display: block;
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  line-height: 1.3;
+}
+
 /* Preview Panel */
 .preview-panel {
   flex: 1;
